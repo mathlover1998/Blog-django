@@ -50,7 +50,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'restful_blog_django.urls'
-DATABASE_ROUTERS = ('blog.routers.BlogPostDBRouter',)
+# DATABASE_ROUTERS = ('blog.routers.BlogPostDBRouter',)
 
 TEMPLATES = [
     {
@@ -75,9 +75,6 @@ WSGI_APPLICATION = 'restful_blog_django.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }, 'posts': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'posts.db',
     }
