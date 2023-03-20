@@ -1,36 +1,54 @@
-
-
+{%load bootstrap4%}
 {% block content %}
 {% include "header.html" %}
-  <!-- Page Header -->
-  <header class="masthead" >
-    <div class="overlay"></div>
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-8 col-md-10 mx-auto">
-          <div class="page-heading">
-            <h1>New Post</h1>
-            <span class="subheading">You're going to make a great blog post!</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
-
+<!-- Page Header -->
+<header class="masthead">
+  <div class="overlay"></div>
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-md-10 mx-auto">
-        
-          <!-- This is where the form will go -->
-        <form action="url 'add_post'" method="POST">
-          {%csrf_token%}
-          {{form.as_p}}
-          <input type="submit" value="Submit Post">
-        </form>m
-
+        <div class="page-heading">
+          <h1>New Post</h1>
+          <span class="subheading">You're going to make a great blog post!</span>
+        </div>
       </div>
     </div>
   </div>
+</header>
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto">
+
+      <!-- This is where the form will go -->
+      <form action="url 'add_post'" method="POST">
+        {%csrf_token%}
+        {%for field in form%}
+        <div class="form-group">
+          {{field.label}}
+          {{field}}
+          {%if field.help_text%}
+          <small class="form-text text-muted">{{field.help_text}}</small>
+          {%endif%}
+          {% if field.errors %}
+          <div class="invalid-feedback">
+            {% for error in field.errors %}
+            {{ error }}
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          {%endfor%}
+          <br>
+          <input type="submit" value="Submit Post">
+
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>
 
 {% include "footer.html" %}
 {% endblock %}
