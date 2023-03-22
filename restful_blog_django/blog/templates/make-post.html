@@ -1,6 +1,8 @@
 {%load bootstrap4%}
 {% block content %}
 {% include "header.html" %}
+
+
 <!-- Page Header -->
 <header class="masthead">
   <div class="overlay"></div>
@@ -21,30 +23,11 @@
     <div class="col-lg-8 col-md-10 mx-auto">
 
       <!-- This is where the form will go -->
-      <form action="url 'add_post'" method="POST">
-        {%csrf_token%}
-        {%for field in form%}
-        <div class="form-group">
-          {{field.label}}
-          {{field}}
-          {%if field.help_text%}
-          <small class="form-text text-muted">{{field.help_text}}</small>
-          {%endif%}
-          {% if field.errors %}
-          <div class="invalid-feedback">
-            {% for error in field.errors %}
-            {{ error }}
-            {% endfor %}
-          </div>
-          {% endif %}
-
-          {%endfor%}
-          <br>
-          <input type="submit" value="Submit Post">
-
-        </div>
-
-      </form>
+      <form>
+        {{ form.media }}
+        {{ form.as_p }}
+        <input type="submit"/>
+    </form>
 
     </div>
   </div>
