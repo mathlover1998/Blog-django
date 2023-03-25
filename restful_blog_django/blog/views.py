@@ -1,32 +1,31 @@
-from django.shortcuts import render,redirect,get_object_or_404
-from .models import BlogPost
-from .forms import CreateBlogPostForm,RegisterForm
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import BlogPost, UserProfile
+from .forms import CreateBlogPostForm, RegisterForm
 from datetime import datetime as dt
 from django.contrib.auth.models import User
-from django.contrib.auth import login,authenticate
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.hashers import make_password
 from django.conf import settings
-
-
-# Create your views here.
-
-
 
 
 def index(request):
     posts = BlogPost.objects.all()
 
-    return render(request,'index.html',{'all_posts':posts})
+    return render(request, 'index.html', {'all_posts': posts})
 
-def show_post(request,id):
+
+def show_post(request, id):
     post = BlogPost.objects.get(id=id)
-    return render(request,'post.html',{'post':post})
+    return render(request, 'post.html', {'post': post})
+
 
 def about(request):
-    return render(request,'about.html')
+    return render(request, 'about.html')
+
 
 def contact(request):
-    return render(request,'contact.html')
+    return render(request, 'contact.html')
+
 
 def add_post(request):
     if request.method == 'POST':
@@ -41,51 +40,60 @@ def add_post(request):
                 subtitle=form.cleaned_data['subtitle'],
             )
             new_blog.save()
-            return redirect('show_post',id = new_blog.id)
+            return redirect('show_post', id=new_blog.id)
     else:
         form = CreateBlogPostForm()
-    return render(request, 'make-post.html', {'form': form,"is_edit":False})
+    return render(request, 'make-post.html', {'form': form, "is_edit": False})
 
-def edit_post(request,id):
-    
+
+def edit_post(request, id):
+
     selected_post = get_object_or_404(BlogPost, pk=id)
-    
-    if request.method =='POST':
+
+    if request.method == 'POST':
         form = CreateBlogPostForm(request.POST)
         if form.is_valid():
-            
-            selected_post.title=form.cleaned_data['title']
-            selected_post.date=str(dt.now().strftime('%B %d, %Y'))
-            selected_post.body=form.cleaned_data['body']
-            selected_post.author=form.cleaned_data['author']
-            selected_post.img_url=form.cleaned_data['img_url']
-            selected_post.subtitle=form.cleaned_data['subtitle']
-            
+
+            selected_post.title = form.cleaned_data['title']
+            selected_post.date = str(dt.now().strftime('%B %d, %Y'))
+            selected_post.body = form.cleaned_data['body']
+            selected_post.author = form.cleaned_data['author']
+            selected_post.img_url = form.cleaned_data['img_url']
+            selected_post.subtitle = form.cleaned_data['subtitle']
+
             selected_post.save()
-            return redirect('show_post',id = selected_post.id)
+            return redirect('show_post', id=selected_post.id)
     else:
         form = CreateBlogPostForm(instance=selected_post)
-    return render(request, 'make-post.html', {'form': form,"is_edit":True,'post_id':id})
+    return render(request, 'make-post.html', {'form': form, "is_edit": True, 'post_id': id})
 
-def delete_post(request,id):
-    post = get_object_or_404(BlogPost,pk =id)
+
+def delete_post(request, id):
+    post = get_object_or_404(BlogPost, pk=id)
     post.delete()
     return redirect('home')
+
 
 def register(request):
     form = RegisterForm()
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            
-            password = make_password(password=form.cleaned_data.get('password'),salt=str(settings.SALT_LENGTH))
-            username = form.cleaned_data.get('username')
-            email = form.cleaned_data.get('email')
-            user = User.objects.create(username=username,email=email)
-            user.set_password(password)
-            user.save()
-            
 
+            password = make_password(password=form.cleaned_data.get(
+                'password'), salt=str(settings.SALT_LENGTH))
+            full_name = form.cleaned_data.get('fullname')
+            email = form.cleaned_data.get('email')
+            user = User.objects.create(username=email, email=email, password=password,)
             
+            user_profile = get_object_or_404(UserProfile,user_id = user.id)
+            user_profile.full_name = full_name
+            user_profile.save()
+
+            login(request,user)
             return redirect('home')
-    return render(request,'register.html',{'form':form})
+    return render(request, 'register.html', {'form': form})
+
+
+# def login(request):
+
