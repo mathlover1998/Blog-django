@@ -1,4 +1,4 @@
-{%load bootstrap4%}
+
 {% block content %}
 {% include "header.html" %}
 
@@ -10,8 +10,14 @@
     <div class="row">
       <div class="col-lg-8 col-md-10 mx-auto">
         <div class="page-heading">
+          {%if not is_edit%}
           <h1>New Post</h1>
+          
+          {%else%}
+          <h1>New Post</h1>
+          {%endif%}
           <span class="subheading">You're going to make a great blog post!</span>
+          
         </div>
       </div>
     </div>
@@ -23,10 +29,13 @@
     <div class="col-lg-8 col-md-10 mx-auto">
 
       <!-- This is where the form will go -->
-      <form>
+      
+      
+      <form method="POST">
+        {%csrf_token%}
         {{ form.media }}
         {{ form.as_p }}
-        <input type="submit"/>
+        <input type="submit" value="Submit">
     </form>
 
     </div>
