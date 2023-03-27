@@ -7,7 +7,7 @@ from django.contrib.auth import login, authenticate,logout
 from django.contrib.auth.hashers import make_password
 from django.conf import settings
 from django.contrib import messages
-
+from django.contrib.auth.decorators import login_required
 
 def index(request):
     posts = BlogPost.objects.all()
@@ -47,6 +47,7 @@ def add_post(request):
     return render(request, 'make-post.html', {'form': form, "is_edit": False})
 
 
+@login_required
 def edit_post(request, id):
 
     selected_post = get_object_or_404(BlogPost, pk=id)
@@ -81,9 +82,7 @@ def register(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
 
-            # password = make_password(password=form.cleaned_data.get(
-            #     'password'), salt=str(settings.SALT_LENGTH))
-            password = form.cleaned_data.get('password')
+            password = make_password(password=form.cleaned_data.get('password'), salt=str(settings.SALT_LENGTH))
             full_name = form.cleaned_data.get('fullname')
             email = form.cleaned_data.get('email')
             user = User.objects.create(username=email, email=email, password=password)
@@ -119,4 +118,4 @@ def login_user(request):
 
 def logout_user(request):
     logout(request)
-    return redirect('home')
+    return redirect('login')
