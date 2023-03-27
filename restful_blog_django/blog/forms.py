@@ -30,9 +30,16 @@ class RegisterForm(forms.ModelForm):
     fullname = forms.CharField(label='Your full name', widget=forms.TextInput(
         attrs={'class': 'form-control'}))
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     self.fields['email'].widget.attrs['class'] = 'email'
     class Meta:
         model = User
         fields = ['email', 'password', 'fullname']
+
+
+class LoginForm(forms.ModelForm):
+    username = forms.CharField(label='Username', widget=forms.TextInput(
+        attrs={'class': 'form-control'}))
+    password = forms.CharField(
+        label='Password', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    class Meta:
+        model = User
+        fields = ['username','password']

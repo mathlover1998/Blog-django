@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import BlogPost, UserProfile
-from .forms import CreateBlogPostForm, RegisterForm
+from .forms import CreateBlogPostForm, RegisterForm,LoginForm
 from datetime import datetime as dt
 from django.contrib.auth.models import User
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate,logout
 from django.contrib.auth.hashers import make_password
 from django.conf import settings
+from django.contrib import messages
 
 
 def index(request):
@@ -73,18 +74,19 @@ def delete_post(request, id):
     post.delete()
     return redirect('home')
 
-
+#update validate
 def register(request):
     form = RegisterForm()
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
 
-            password = make_password(password=form.cleaned_data.get(
-                'password'), salt=str(settings.SALT_LENGTH))
+            # password = make_password(password=form.cleaned_data.get(
+            #     'password'), salt=str(settings.SALT_LENGTH))
+            password = form.cleaned_data.get('password')
             full_name = form.cleaned_data.get('fullname')
             email = form.cleaned_data.get('email')
-            user = User.objects.create(username=email, email=email, password=password,)
+            user = User.objects.create(username=email, email=email, password=password)
             
             user_profile = get_object_or_404(UserProfile,user_id = user.id)
             user_profile.full_name = full_name
@@ -95,5 +97,26 @@ def register(request):
     return render(request, 'register.html', {'form': form})
 
 
-# def login(request):
+def login_user(request):
+    if request.method =='POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request,username = username,password=password)
+            if user is not None:
+                login(request,user)
+                return redirect('home')
+            else:
+                if User.objects.filter(username=username).exists():
+                    messages.error(request, 'Invalid password.')
+                else:
+                    messages.error(request, 'Invalid username.')
+    else:
+        form = LoginForm()
+    return render(request, 'login.html', {'form': form})
 
+
+def logout_user(request):
+    logout(request)
+    return redirect('home')
